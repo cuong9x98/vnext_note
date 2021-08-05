@@ -4,7 +4,7 @@ namespace Vnext\Amount\Model\Total\Quote;
  * Class Custom
  * @package Mageplaza\HelloWorld\Model\Total\Quote
  */
-class Fee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
+class Custom extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 {
     /**
      * @var \Magento\Framework\Pricing\PriceCurrencyInterface
