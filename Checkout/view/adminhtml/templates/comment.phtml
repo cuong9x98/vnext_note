@@ -1,0 +1,19 @@
+<?php
+    $comment = $block->getComment();
+?>
+<section class="admin__page-section">
+    <div class="admin__page-section-title">
+        <span class="title"><?= __('Order Comment') ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <div class="admin__page-section-item">
+            <div class="admin__page-section-item-title">
+                <span class="title"><?= __('Comment')?></span>
+                <div class="actions"><?=  $block->getEditLink(); ?></div>
+            </div>
+            <div class="admin__page-section-item-content">
+                <?php echo $comment;?>
+            </div>
+        </div>
+    </div>
+</section>
