@@ -120,6 +120,12 @@ class Courses extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
         $this->saveAndReplaceEntity();
         return $this;
     }
+
+    public function replaceEntity()
+    {
+        $this->saveAndReplaceEntity();
+        return $this;
+    }
     /**
      * Save and replace data message
      *
@@ -190,5 +196,59 @@ class Courses extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
             }
         }
         return $this;
+    }
+    /**
+     * Delete message to customtable.
+     *
+     * @param array $priceData
+     * @param string $table
+     * @return $this
+     */
+    public function deleteEntity()
+    {
+        $listTitle = [];
+        while ($bunch = $this->_dataSourceModel->getNextBunch())
+        {
+            foreach ($bunch as $rowNum => $rowData)
+            {
+                $this->validateRow($rowData, $rowNum);
+                if (!$this->getErrorAggregator()->isRowInvalid($rowNum))
+                {
+                    $rowTtile = $rowData[self::NAME];
+                    $listTitle[] = $rowTtile;
+                }
+                if ($this->getErrorAggregator()->hasToBeTerminated())
+                {
+                    $this->getErrorAggregator()->addRowToSkip($rowNum);
+                }
+            }
+        }
+        if ($listTitle)
+        {
+            $this->deleteEntityFinish(array_unique($listTitle),self::TABLE_Entity);
+        }
+        return $this;
+    }
+
+    protected function deleteEntityFinish(array $ids, $table)
+    {
+        if ($table)
+        {
+            try
+            {
+                $this->countItemsDeleted += $this->_connection->delete(
+                    $this->_connection->getTableName($table),
+                    $this->_connection->quoteInto('entity_id IN (?)', $ids));
+                return true;
+            }
+            catch (\Exception $e)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 }
