@@ -3,7 +3,7 @@
     <type name="Magento\ImportExport\Model\Import\SampleFileProvider">
         <arguments>
             <argument name="samples" xsi:type="array">
-                <item name="import_student" xsi:type="string">Student</item>
+                <item name="import_student" xsi:type="string">Vnext_Import</item>
             </argument>
         </arguments>
     </type>

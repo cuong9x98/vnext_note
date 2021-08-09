@@ -10,6 +10,7 @@ class Courses extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
     const ENTITY_ID = 'entity_id';
     const NAME = 'name';
     const ADDRESS = 'address';
+    const SEX = 'sex';
     const TABLE_Entity = 'student';
     /**
      * Validation failure message template definitions
@@ -35,6 +36,7 @@ class Courses extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
         self::ENTITY_ID,
         self::NAME,
         self::ADDRESS,
+        self::SEX,
     ];
     /**
      * Need to log in import history
@@ -79,7 +81,7 @@ class Courses extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
      */
     public function getEntityTypeCode()
     {
-        return 'messages';
+        return 'import_student';
     }
     /**
      * Row validation.
@@ -146,6 +148,7 @@ class Courses extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
                     self::ENTITY_ID => $rowData[self::ENTITY_ID],
                     self::NAME => $rowData[self::NAME],
                     self::ADDRESS => $rowData[self::ADDRESS],
+                    self::SEX => $rowData[self::SEX],
                 ];
             }
             if (\Magento\ImportExport\Model\Import::BEHAVIOR_REPLACE == $behavior) {
@@ -182,6 +185,7 @@ class Courses extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
                     self::ENTITY_ID,
                     self::NAME,
                     self::ADDRESS,
+                    self::SEX,
                 ]);
             }
         }
