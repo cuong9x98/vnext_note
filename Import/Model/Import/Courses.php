@@ -94,7 +94,7 @@ class Courses extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
     {
         $title = false;
         if (isset($this->_validatedRows[$rowNum])) {
-            return !$this->getErrorAggregator()->isRowInvalid($rowNum);
+            return !$this->_validatedRows[$rowNum];
         }
         $this->_validatedRows[$rowNum] = true;
         return !$this->getErrorAggregator()->isRowInvalid($rowNum);
@@ -107,11 +107,17 @@ class Courses extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
      */
     protected function _importData()
     {
-        $this->saveEntity();
+        if (\Magento\ImportExport\Model\Import::BEHAVIOR_DELETE == $this->getBehavior()) {
+            $this->deleteEntity();
+        } elseif (\Magento\ImportExport\Model\Import::BEHAVIOR_REPLACE == $this->getBehavior()) {
+            $this->replaceEntity();
+        } elseif (\Magento\ImportExport\Model\Import::BEHAVIOR_APPEND == $this->getBehavior()) {
+            $this->saveEntity();
+        }
         return true;
     }
     /**
-     * Save Message
+     * Save
      *
      * @return $this
      */
@@ -120,10 +126,39 @@ class Courses extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
         $this->saveAndReplaceEntity();
         return $this;
     }
-
+    /**
+     * Replace
+     *
+     * @return $this
+     */
     public function replaceEntity()
     {
         $this->saveAndReplaceEntity();
+        return $this;
+    }
+    /**
+     * Delete
+     *
+     * @return $this
+     */
+    public function deleteEntity()
+    {
+        $listTitle = [];
+        while ($bunch = $this->_dataSourceModel->getNextBunch()) {
+            foreach ($bunch as $rowNum => $rowData) {
+                $this->validateRow($rowData, $rowNum);
+                if (!$this->getErrorAggregator()->isRowInvalid($rowNum)) {
+                    $rowTtile = $rowData[self::ENTITY_ID];
+                    $listTitle[] = $rowTtile;
+                }
+                if ($this->getErrorAggregator()->hasToBeTerminated()) {
+                    $this->getErrorAggregator()->addRowToSkip($rowNum);
+                }
+            }
+        }
+        if ($listTitle) {
+            $this->deleteEntityFinish(array_unique($listTitle),self::TABLE_Entity);
+        }
         return $this;
     }
     /**
@@ -204,50 +239,22 @@ class Courses extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
      * @param string $table
      * @return $this
      */
-    public function deleteEntity()
-    {
-        $listTitle = [];
-        while ($bunch = $this->_dataSourceModel->getNextBunch())
-        {
-            foreach ($bunch as $rowNum => $rowData)
-            {
-                $this->validateRow($rowData, $rowNum);
-                if (!$this->getErrorAggregator()->isRowInvalid($rowNum))
-                {
-                    $rowTtile = $rowData[self::NAME];
-                    $listTitle[] = $rowTtile;
-                }
-                if ($this->getErrorAggregator()->hasToBeTerminated())
-                {
-                    $this->getErrorAggregator()->addRowToSkip($rowNum);
-                }
-            }
-        }
-        if ($listTitle)
-        {
-            $this->deleteEntityFinish(array_unique($listTitle),self::TABLE_Entity);
-        }
-        return $this;
-    }
 
-    protected function deleteEntityFinish(array $ids, $table)
+
+
+    protected function deleteEntityFinish(array $listTitle, $table)
     {
-        if ($table)
-        {
-            try
-            {
+        if ($table && $listTitle) {
+            try {
                 $this->countItemsDeleted += $this->_connection->delete(
                     $this->_connection->getTableName($table),
-                    $this->_connection->quoteInto('entity_id IN (?)', $ids));
+                    $this->_connection->quoteInto('entity_id IN (?)', $listTitle)
+                );
                 return true;
-            }
-            catch (\Exception $e)
-            {
+            } catch (\Exception $e) {
                 return false;
             }
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
