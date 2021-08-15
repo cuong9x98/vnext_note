@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!-- Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Plugin -->
+    <type name="\Magento\Catalog\Model\Product">
+        <plugin name="update-student-name" type="Vnext\Plugin\Plugin\UpdateName" sortOrder="1" disabled="false"/>
+    </type>
+    <!--    preference-->
+    <preference for="Magento\Catalog\Model\Product" type="Vnext\Plugin\Model\Catalog\Product" />
+</config>
