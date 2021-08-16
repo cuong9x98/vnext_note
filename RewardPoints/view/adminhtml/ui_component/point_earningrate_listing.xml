@@ -99,7 +99,7 @@
         </column>
         <column name="customer_group_id" component="Magento_Ui/js/grid/columns/select">
             <settings>
-                <options class="Vnext\RewardPoints\Model\Earningrate\Source\Status"/>
+                <options class="Vnext\RewardPoints\Model\Earningrate\Source\GroupCustomers"/>
                 <filter>select</filter>
                 <editor>
                     <editorType>select</editorType>
